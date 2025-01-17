@@ -19,12 +19,12 @@ document.body.appendChild(renderer.domElement);
 const scene = new Scene();
 const loader = new CubeTextureLoader();
 const textures = loader.load([
-  "/textures/posx.jpg",
-  "/textures/negx.jpg",
-  "/textures/posy.jpg",
-  "/textures/negy.jpg",
-  "/textures/posz.jpg",
-  "/textures/negz.jpg",
+  "/assets/textures/posx.jpg",
+  "/assets/textures/negx.jpg",
+  "/assets/textures/posy.jpg",
+  "/assets/textures/negy.jpg",
+  "/assets/textures/posz.jpg",
+  "/assets/textures/negz.jpg",
 ]);
 scene.background = textures;
 console.log(scene.background);
