@@ -1,16 +1,23 @@
 import {
   AmbientLight,
+  AnimationMixer,
+  Box3,
+  BoxGeometry,
+  BoxHelper,
+  Clock,
   Color,
   CubeTextureLoader,
   Mesh,
+  MeshBasicMaterial,
   MeshStandardMaterial,
   OctahedronGeometry,
   PerspectiveCamera,
   PointLight,
   Scene,
+  Vector3,
   WebGLRenderer,
 } from "three";
-import { OrbitControls } from "three/examples/jsm/Addons.js";
+import { GLTFLoader, OrbitControls } from "three/examples/jsm/Addons.js";
 
 const renderer = new WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -27,43 +34,45 @@ const textures = loader.load([
   "/cubemap/textures/negz.jpg",
 ]);
 scene.background = textures;
-console.log(scene.background);
 const camera = new PerspectiveCamera(
   75,
   window.innerWidth / window.innerHeight,
   0.1,
   1000
 );
-camera.position.set(0, 0, 5); // Поставте камеру подалі, щоб вона могла бачити текстури
+camera.position.set(0, 0, 15);
 camera.lookAt(0, 0, 0);
 scene.add(camera);
 
 const controls = new OrbitControls(camera, renderer.domElement);
+controls.minPolarAngle = Math.PI / 4;
+controls.maxPolarAngle = (Math.PI / 180) * 70;
 controls.update();
 
-const geometry = new OctahedronGeometry(1);
-const material = new MeshStandardMaterial({
-  color: "blue",
-  roughness: 0.5,
-  metalness: 0.5,
+const modelLoader = new GLTFLoader();
+let mixer = null;
+modelLoader.load("/models/CesiumMan.gltf", (data) => {
+  const model = data.scene;
+  mixer = new AnimationMixer(model);
+  const animation = mixer.clipAction(data.animations[0]);
+  animation.play();
+  scene.add(model);
+  model.scale.set(5, 5, 5);
 });
-const octaHedron = new Mesh(geometry, material);
-octaHedron.position.set(5, 5, 5);
-scene.add(octaHedron);
-const pointingLight = new PointLight("white", 6, 50);
-pointingLight.position.set(4, 6, 4);
-scene.add(pointingLight);
-const lowPointingLight = new PointLight("white", 6, 50);
-lowPointingLight.position.set(4, 4, 4);
-scene.add(lowPointingLight);
 
 const ambientLight = new AmbientLight("white", 0.6);
 scene.add(ambientLight);
 
+const clock = new Clock();
+
 function animate() {
   requestAnimationFrame(animate);
-  octaHedron.rotation.y += 0.01;
+  const delta = clock.getDelta();
+  if (mixer) {
+    mixer.update(delta);
+  }
   controls.update();
   renderer.render(scene, camera);
 }
+
 animate();
