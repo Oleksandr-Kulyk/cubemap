@@ -51,7 +51,7 @@ controls.update();
 
 const modelLoader = new GLTFLoader();
 let mixer = null;
-modelLoader.load("/models/CesiumMan.gltf", (data) => {
+modelLoader.load("/cubemap/models/CesiumMan.gltf", (data) => {
   const model = data.scene;
   mixer = new AnimationMixer(model);
   const animation = mixer.clipAction(data.animations[0]);
